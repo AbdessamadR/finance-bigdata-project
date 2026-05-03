@@ -1,0 +1,18 @@
+2026-05-03 23:40:18,452 [INFO] ==================================================
+2026-05-03 23:40:18,453 [INFO] Démarrage pipeline Gold
+2026-05-03 23:40:18,453 [INFO] ==================================================
+2026-05-03 23:40:18,473 [INFO] Silver chargé : 26 lignes
+2026-05-03 23:40:18,481 [INFO] Snapshot marché calculé
+2026-05-03 23:40:18,494 [INFO] Top 5 mouvements calculés
+2026-05-03 23:40:18,533 [INFO] Résumé par catégorie : 4 catégories
+2026-05-03 23:40:18,540 [INFO] Résumé par devise : 3 devises
+2026-05-03 23:40:18,545 [INFO] Alertes prix (seuil 2.0%) : 2 actifs
+2026-05-03 23:40:18,549 [INFO] Top 5 cryptos par capitalisation calculés
+2026-05-03 23:40:18,556 [INFO] Gold sauvegardé : snapshot_marche_latest.csv
+2026-05-03 23:40:18,560 [INFO] Gold sauvegardé : top_mouvements_latest.csv
+2026-05-03 23:40:18,563 [INFO] Gold sauvegardé : resume_categorie_latest.csv
+2026-05-03 23:40:18,571 [INFO] Gold sauvegardé : resume_devise_latest.csv
+2026-05-03 23:40:18,574 [INFO] Gold sauvegardé : alertes_prix_latest.csv
+2026-05-03 23:40:18,577 [INFO] Gold sauvegardé : top_cryptos_cap_latest.csv
+2026-05-03 23:40:18,600 [INFO] Pipeline Gold terminé
+2026-05-03 23:40:18,601 [INFO] ==================================================

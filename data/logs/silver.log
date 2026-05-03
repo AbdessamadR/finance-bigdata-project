@@ -1,0 +1,43 @@
+2026-05-03 23:28:40,477 [INFO] ==================================================
+2026-05-03 23:28:40,477 [INFO] Démarrage pipeline Silver
+2026-05-03 23:28:40,478 [INFO] ==================================================
+2026-05-03 23:28:40,496 [INFO] Chargé : collecte_20260503_154638.csv (38 lignes)
+2026-05-03 23:28:40,499 [INFO] Chargé : collecte_20260503_183540.csv (38 lignes)
+2026-05-03 23:28:40,501 [INFO] Total Bronze : 76 lignes
+2026-05-03 23:28:40,502 [INFO] Erreurs supprimées : 0 lignes
+2026-05-03 23:28:40,504 [INFO] Colonnes normalisées
+2026-05-03 23:28:40,509 [INFO] Valeurs aberrantes supprimées : 0 lignes
+2026-05-03 23:28:40,517 [INFO] Doublons supprimés : 38 lignes
+2026-05-03 23:28:40,520 [INFO] Devises normalisées
+2026-05-03 23:28:40,526 [INFO] Silver sauvegardé : C:\Users\HP\Desktop\script\data\silver\silver_20260503_222840.csv
+2026-05-03 23:28:40,526 [INFO] Total lignes Silver : 38
+2026-05-03 23:28:40,526 [INFO] ==================================================
+2026-05-03 23:33:24,416 [INFO] ==================================================
+2026-05-03 23:33:24,416 [INFO] Démarrage pipeline Silver
+2026-05-03 23:33:24,416 [INFO] ==================================================
+2026-05-03 23:33:24,428 [INFO] Chargé : collecte_20260503_154638.csv (38 lignes)
+2026-05-03 23:33:24,431 [INFO] Chargé : collecte_20260503_183540.csv (38 lignes)
+2026-05-03 23:33:24,433 [INFO] Total Bronze : 76 lignes
+2026-05-03 23:33:24,434 [INFO] Erreurs supprimées : 0 lignes
+2026-05-03 23:33:24,435 [INFO] Colonnes normalisées
+2026-05-03 23:33:24,439 [INFO] Valeurs aberrantes supprimées : 0 lignes
+2026-05-03 23:33:24,441 [INFO] Devises normalisées
+2026-05-03 23:33:24,477 [INFO] Fusion terminée : 76 → 30 lignes
+2026-05-03 23:33:24,484 [INFO] Silver sauvegardé : C:\Users\HP\Desktop\script\data\silver\silver_20260503_223324.csv
+2026-05-03 23:33:24,486 [INFO] Total lignes Silver : 30
+2026-05-03 23:33:24,486 [INFO] ==================================================
+2026-05-03 23:35:19,056 [INFO] ==================================================
+2026-05-03 23:35:19,057 [INFO] Démarrage pipeline Silver
+2026-05-03 23:35:19,057 [INFO] ==================================================
+2026-05-03 23:35:19,063 [INFO] Chargé : collecte_20260503_154638.csv (38 lignes)
+2026-05-03 23:35:19,066 [INFO] Chargé : collecte_20260503_183540.csv (38 lignes)
+2026-05-03 23:35:19,067 [INFO] Total Bronze : 76 lignes
+2026-05-03 23:35:19,068 [INFO] Erreurs supprimées : 0 lignes
+2026-05-03 23:35:19,069 [INFO] Colonnes normalisées
+2026-05-03 23:35:19,071 [INFO] Valeurs aberrantes supprimées : 0 lignes
+2026-05-03 23:35:19,072 [INFO] Devises normalisées
+2026-05-03 23:35:19,076 [INFO] Tickers Boursorama normalisés
+2026-05-03 23:35:19,102 [INFO] Fusion terminée : 76 → 26 lignes
+2026-05-03 23:35:19,109 [INFO] Silver sauvegardé : C:\Users\HP\Desktop\script\data\silver\silver_20260503_223519.csv
+2026-05-03 23:35:19,110 [INFO] Total lignes Silver : 26
+2026-05-03 23:35:19,110 [INFO] ==================================================

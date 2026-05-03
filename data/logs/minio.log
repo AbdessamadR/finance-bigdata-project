@@ -1,0 +1,20 @@
+2026-05-03 23:21:51,113 [INFO] Bucket cree : finance-raw
+2026-05-03 23:21:51,128 [INFO] Bucket cree : finance-processed
+2026-05-03 23:21:51,141 [INFO] Bucket cree : finance-logs
+2026-05-03 23:21:51,172 [INFO] Upload OK : finance-raw/2026/05/03/collecte_20260503_154638.csv
+2026-05-03 23:21:51,244 [INFO] Upload OK : finance-raw/2026/05/03/collecte_20260503_154638.json
+2026-05-03 23:21:51,271 [INFO] Upload OK : finance-raw/2026/05/03/collecte_20260503_183540.csv
+2026-05-03 23:21:51,339 [INFO] Upload OK : finance-raw/2026/05/03/collecte_20260503_183540.json
+2026-05-03 23:21:51,357 [INFO] Upload OK : finance-processed/2026/05/03/collecte_latest.csv
+2026-05-03 23:21:51,371 [INFO] Upload OK : finance-logs/2026/05/03/batch.log
+2026-05-03 23:21:51,392 [WARNING] Failed to parse headers (url=http://localhost:9000/finance-logs/2026/05/03/minio.log): [MissingHeaderBodySeparatorDefect()], unparsed data: 'HTTP/1.1 200 OK\r\nAccept-Ranges: bytes\r\nContent-Length: 0\r\nETag: "3a5c1b05a9dfe3d96176d4d899be6e4d"\r\nServer: MinIO\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\nVary: Origin\r\nVary: Accept-Encoding\r\nX-Amz-Checksum-Crc32: XFFNYQ==\r\nX-Amz-Checksum-Type: FULL_OBJECT\r\nX-Amz-Id-2: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8\r\nX-Amz-Request-Id: 18AC2E58B2297C89\r\nX-Content-Type-Options: nosniff\r\nX-Ratelimit-Limit: 2058\r\nX-Ratelimit-Remaining: 2058\r\nX-Xss-Protection: 1; mode=block\r\nDate: Sun, 03 May 2026 22:21:51 GMT\r\n\r\n'
+Traceback (most recent call last):
+  File "C:\Users\HP\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\connection.py", line 574, in getresponse
+    assert_header_parsing(httplib_response.msg)
+  File "C:\Users\HP\AppData\Local\Programs\Python\Python310\lib\site-packages\urllib3\util\response.py", line 88, in assert_header_parsing
+    raise HeaderParsingError(defects=defects, unparsed_data=unparsed_data)
+urllib3.exceptions.HeaderParsingError: [MissingHeaderBodySeparatorDefect()], unparsed data: 'HTTP/1.1 200 OK\r\nAccept-Ranges: bytes\r\nContent-Length: 0\r\nETag: "3a5c1b05a9dfe3d96176d4d899be6e4d"\r\nServer: MinIO\r\nStrict-Transport-Security: max-age=31536000; includeSubDomains\r\nVary: Origin\r\nVary: Accept-Encoding\r\nX-Amz-Checksum-Crc32: XFFNYQ==\r\nX-Amz-Checksum-Type: FULL_OBJECT\r\nX-Amz-Id-2: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8\r\nX-Amz-Request-Id: 18AC2E58B2297C89\r\nX-Content-Type-Options: nosniff\r\nX-Ratelimit-Limit: 2058\r\nX-Ratelimit-Remaining: 2058\r\nX-Xss-Protection: 1; mode=block\r\nDate: Sun, 03 May 2026 22:21:51 GMT\r\n\r\n'
+2026-05-03 23:22:21,641 [INFO] Upload OK : finance-logs/2026/05/03/minio.log
+2026-05-03 23:22:21,724 [INFO] Upload OK : finance-logs/2026/05/03/producer.log
+2026-05-03 23:22:21,747 [INFO] Upload OK : finance-logs/2026/05/03/scraper.log
+2026-05-03 23:22:21,748 [INFO] Upload termine : 9 OK, 0 erreurs
