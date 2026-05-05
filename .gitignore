@@ -1,0 +1,53 @@
+# ── Python ────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# ── Environnements virtuels ───────────────────────────────
+.env
+.venv/
+venv/
+env/
+
+# ── Données générées ──────────────────────────────────────
+data/raw/
+data/silver/
+data/gold/
+data/processed/
+data/logs/
+
+# ── Fichiers de données ───────────────────────────────────
+*.csv
+*.json
+*.parquet
+*.xlsx
+
+# ── DuckDB ────────────────────────────────────────────────
+*.duckdb
+*.duckdb.wal
+
+# ── Logs Airflow ──────────────────────────────────────────
+logs_airflow/
+
+# ── Logs généraux ─────────────────────────────────────────
+*.log
+
+# ── IDE ───────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Secrets ───────────────────────────────────────────────
+secrets.py
+.env
+*.env

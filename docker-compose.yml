@@ -62,11 +62,29 @@ services:
       interval: 10s
       retries: 5
 
+  postgres-dw:
+    image: postgres:15
+    container_name: postgres-dw
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: dw_user
+      POSTGRES_PASSWORD: dw_password
+      POSTGRES_DB: finance_dw
+    volumes:
+      - postgres_dw_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "dw_user"]
+      interval: 10s
+      retries: 5
+
   airflow-finance:
     image: apache/airflow:2.9.0
     container_name: airflow-finance
     depends_on:
       postgres-airflow:
+        condition: service_healthy
+      postgres-dw:
         condition: service_healthy
     ports:
       - "8082:8080"
@@ -81,8 +99,9 @@ services:
       - ./logs_airflow:/opt/airflow/logs
       - .:/opt/airflow/project
     command: >
-      bash -c "pip install pandas duckdb boto3 apscheduler yfinance requests websocket-client kafka-python && airflow db migrate && airflow users create --username admin --password admin --firstname Admin --lastname Finance --role Admin --email admin@finance.com && airflow webserver & airflow scheduler"
+      bash -c "pip install pandas duckdb boto3 apscheduler yfinance requests websocket-client kafka-python psycopg2-binary && airflow db migrate && airflow users create --username admin --password admin --firstname Admin --lastname Finance --role Admin --email admin@finance.com && airflow webserver & airflow scheduler"
 
 volumes:
   minio_data:
   postgres_airflow_data:
+  postgres_dw_data:
