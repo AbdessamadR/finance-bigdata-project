@@ -1,0 +1,148 @@
+[2026-05-05T00:38:03.436+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-05T00:38:03.605+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: finance_pipeline.batch_ingestion manual__2026-05-05T00:37:13+00:00 [queued]>
+[2026-05-05T00:38:03.624+0000] {taskinstance.py:2073} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: finance_pipeline.batch_ingestion manual__2026-05-05T00:37:13+00:00 [queued]>
+[2026-05-05T00:38:03.626+0000] {taskinstance.py:2303} INFO - Starting attempt 1 of 4
+[2026-05-05T00:38:03.651+0000] {taskinstance.py:2327} INFO - Executing <Task(PythonOperator): batch_ingestion> on 2026-05-05 00:37:13+00:00
+[2026-05-05T00:38:03.665+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'finance_pipeline', 'batch_ingestion', 'manual__2026-05-05T00:37:13+00:00', '--job-id', '6', '--raw', '--subdir', 'DAGS_FOLDER/finance_pipeline.py', '--cfg-path', '/tmp/tmpen8lyjih']
+[2026-05-05T00:38:03.671+0000] {standard_task_runner.py:91} INFO - Job 6: Subtask batch_ingestion
+[2026-05-05T00:38:03.673+0000] {logging_mixin.py:188} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61 DeprecationWarning: This process (pid=317) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2026-05-05T00:38:03.675+0000] {standard_task_runner.py:63} INFO - Started process 318 to run task
+[2026-05-05T00:38:03.882+0000] {task_command.py:426} INFO - Running <TaskInstance: finance_pipeline.batch_ingestion manual__2026-05-05T00:37:13+00:00 [running]> on host 43328e106f93
+[2026-05-05T00:38:04.313+0000] {taskinstance.py:2644} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='finance' AIRFLOW_CTX_DAG_ID='finance_pipeline' AIRFLOW_CTX_TASK_ID='batch_ingestion' AIRFLOW_CTX_EXECUTION_DATE='2026-05-05T00:37:13+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-05-05T00:37:13+00:00'
+[2026-05-05T00:38:04.315+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-05T00:38:07.860+0000] {batch_ingestion.py:79} INFO - ==================================================
+[2026-05-05T00:38:07.861+0000] {batch_ingestion.py:80} INFO - Batch run - 2026-05-05 00:38:07
+[2026-05-05T00:38:07.862+0000] {batch_ingestion.py:81} INFO - ==================================================
+[2026-05-05T00:38:07.863+0000] {logging_mixin.py:188} INFO - 
+══════════════════════════════════════════════════════════
+[2026-05-05T00:38:07.864+0000] {logging_mixin.py:188} INFO -    Finance BigData — Collecte complète (4 sources)
+[2026-05-05T00:38:07.866+0000] {logging_mixin.py:188} INFO -    2026-05-05 00:38:07
+[2026-05-05T00:38:07.867+0000] {logging_mixin.py:188} INFO - ══════════════════════════════════════════════════════════
+[2026-05-05T00:38:07.868+0000] {logging_mixin.py:188} INFO - 
+📈  Actions US :
+[2026-05-05T00:38:08.974+0000] {logging_mixin.py:188} INFO -     ▼  AAPL                 276.83 USD   (-1.17%)  [yahoo_finance]
+[2026-05-05T00:38:09.933+0000] {logging_mixin.py:188} INFO -     ▲  MSFT                 413.62 USD   (+0.09%)  [yahoo_finance]
+[2026-05-05T00:38:10.857+0000] {logging_mixin.py:188} INFO -     ▲  NVDA                 198.48 USD   (+0.18%)  [yahoo_finance]
+[2026-05-05T00:38:12.098+0000] {logging_mixin.py:188} INFO -     ▼  GOOGL                383.25 USD   (-0.54%)  [yahoo_finance]
+[2026-05-05T00:38:13.056+0000] {logging_mixin.py:188} INFO -     ▲  AMZN                 272.05 USD   (+1.70%)  [yahoo_finance]
+[2026-05-05T00:38:14.003+0000] {logging_mixin.py:188} INFO -     ▲  TSLA                 392.51 USD   (+0.32%)  [yahoo_finance]
+[2026-05-05T00:38:15.002+0000] {logging_mixin.py:188} INFO -     ▲  META                 610.41 USD   (+0.26%)  [yahoo_finance]
+[2026-05-05T00:38:15.505+0000] {logging_mixin.py:188} INFO - 
+📊  Indices :
+[2026-05-05T00:38:16.594+0000] {logging_mixin.py:188} INFO -     ▼  ^GSPC               7200.75 USD   (-0.41%)  [yahoo_finance]
+[2026-05-05T00:38:18.110+0000] {logging_mixin.py:188} INFO -     ▼  ^DJI               48941.90 USD   (-1.13%)  [yahoo_finance]
+[2026-05-05T00:38:19.559+0000] {logging_mixin.py:188} INFO -     ▼  ^IXIC              25067.80 USD   (-0.19%)  [yahoo_finance]
+[2026-05-05T00:38:21.197+0000] {logging_mixin.py:188} INFO -     ▼  ^FCHI               7976.12 EUR   (-1.68%)  [yahoo_finance]
+[2026-05-05T00:38:22.736+0000] {logging_mixin.py:188} INFO -     ▼  ^GDAXI             23991.27 EUR   (-1.24%)  [yahoo_finance]
+[2026-05-05T00:38:24.167+0000] {logging_mixin.py:188} INFO -     ▼  ^FTSE              10363.90 GBP   (-0.14%)  [yahoo_finance]
+[2026-05-05T00:38:24.669+0000] {logging_mixin.py:188} INFO - 
+🇫🇷  Actions françaises :
+[2026-05-05T00:38:25.127+0000] {logging_mixin.py:188} INFO -     ▼  TTE.PA                78.65 EUR   (-0.93%)  [yahoo_finance]
+[2026-05-05T00:38:26.321+0000] {logging_mixin.py:188} INFO -     ▼  BN.PA                 65.20 EUR   (-2.01%)  [yahoo_finance]
+[2026-05-05T00:38:27.331+0000] {logging_mixin.py:188} INFO -     ▲  AIR.PA               176.18 EUR   (+0.51%)  [yahoo_finance]
+[2026-05-05T00:38:28.321+0000] {logging_mixin.py:188} INFO -     ▼  SAN.PA                77.81 EUR   (-2.65%)  [yahoo_finance]
+[2026-05-05T00:38:29.262+0000] {logging_mixin.py:188} INFO -     ▼  OR.PA                359.70 EUR   (-1.57%)  [yahoo_finance]
+[2026-05-05T00:38:29.765+0000] {logging_mixin.py:188} INFO - 
+₿   Cryptos (CoinGecko) :
+[2026-05-05T00:38:29.766+0000] {logging_mixin.py:188} INFO - 
+  📡 CoinGecko — 8 cryptos en 1 appel...
+[2026-05-05T00:38:32.264+0000] {logging_mixin.py:188} INFO -     ▲  BTC-USD            80032.00 USD   (+2.16%)  [coingecko]
+[2026-05-05T00:38:32.267+0000] {logging_mixin.py:188} INFO -     ▲  ETH-USD             2353.45 USD   (+1.85%)  [coingecko]
+[2026-05-05T00:38:32.269+0000] {logging_mixin.py:188} INFO -     ▲  XRP-USD                1.39 USD   (+0.72%)  [coingecko]
+[2026-05-05T00:38:32.272+0000] {logging_mixin.py:188} INFO -     ▲  BNB-USD              624.34 USD   (+1.35%)  [coingecko]
+[2026-05-05T00:38:32.274+0000] {logging_mixin.py:188} INFO -     ▲  SOL-USD               84.16 USD   (+0.93%)  [coingecko]
+[2026-05-05T00:38:32.277+0000] {logging_mixin.py:188} INFO -     ▲  DOGE-USD               0.11 USD   (+2.21%)  [coingecko]
+[2026-05-05T00:38:32.280+0000] {logging_mixin.py:188} INFO -     ▲  ADA-USD                0.25 USD   (+0.81%)  [coingecko]
+[2026-05-05T00:38:32.283+0000] {logging_mixin.py:188} INFO -     ▲  DOT-USD                1.23 USD   (+2.05%)  [coingecko]
+[2026-05-05T00:38:32.285+0000] {coingecko.py:89} INFO - CoinGecko — 8 cryptos récupérées
+[2026-05-05T00:38:33.917+0000] {logging_mixin.py:188} INFO - 
+  😱 Fear & Greed : 50/100 — Neutral
+[2026-05-05T00:38:33.928+0000] {logging_mixin.py:188} INFO - 
+⚡  Cryptos temps réel (Binance) :
+[2026-05-05T00:38:33.934+0000] {logging_mixin.py:188} INFO - 
+  📡 Binance — 8 cryptos en 1 appel...
+[2026-05-05T00:38:35.976+0000] {logging_mixin.py:188} INFO -     ▲  BTC-USD            80057.07 USD   (+2.18%)  [binance]
+[2026-05-05T00:38:35.988+0000] {logging_mixin.py:188} INFO -     ▲  ETH-USD             2354.28 USD   (+1.88%)  [binance]
+[2026-05-05T00:38:35.994+0000] {logging_mixin.py:188} INFO -     ▲  BNB-USD              624.61 USD   (+1.38%)  [binance]
+[2026-05-05T00:38:35.997+0000] {logging_mixin.py:188} INFO -     ▲  ADA-USD                0.25 USD   (+0.85%)  [binance]
+[2026-05-05T00:38:35.999+0000] {logging_mixin.py:188} INFO -     ▲  XRP-USD                1.39 USD   (+0.76%)  [binance]
+[2026-05-05T00:38:36.006+0000] {logging_mixin.py:188} INFO -     ▲  DOGE-USD               0.11 USD   (+2.32%)  [binance]
+[2026-05-05T00:38:36.009+0000] {logging_mixin.py:188} INFO -     ▲  SOL-USD               84.24 USD   (+0.99%)  [binance]
+[2026-05-05T00:38:36.014+0000] {logging_mixin.py:188} INFO -     ▲  DOT-USD                1.23 USD   (+2.08%)  [binance]
+[2026-05-05T00:38:36.017+0000] {binance.py:92} INFO - Binance — 8 cryptos récupérées
+[2026-05-05T00:38:36.050+0000] {logging_mixin.py:188} INFO - 
+🏛️   Actions CAC40 (Boursorama) :
+[2026-05-05T00:38:40.632+0000] {logging_mixin.py:188} INFO -     ▼  1rPTTE                78.65 EUR   (-0.81%)  [boursorama]
+[2026-05-05T00:38:43.914+0000] {logging_mixin.py:188} INFO -     ▼  1rPBN                 65.20 EUR   (-2.31%)  [boursorama]
+[2026-05-05T00:38:47.466+0000] {logging_mixin.py:188} INFO -     ▲  1rPAIR               176.18 EUR   (+0.74%)  [boursorama]
+[2026-05-05T00:38:50.909+0000] {logging_mixin.py:188} INFO -     ▼  1rPSAN                77.81 EUR   (-2.52%)  [boursorama]
+[2026-05-05T00:38:50.937+0000] {logging_mixin.py:188} WARNING - /opt/***/project/scraping/main.py:61 FutureWarning: The behavior of DataFrame concatenation with empty or all-NA entries is deprecated. In a future version, this will no longer exclude empty or all-NA columns when determining the result dtypes. To retain the old behavior, exclude the relevant entries before the concat operation.
+[2026-05-05T00:38:50.949+0000] {logging_mixin.py:188} INFO - 
+──────────────────────────────────────────────────────────
+[2026-05-05T00:38:50.951+0000] {logging_mixin.py:188} INFO -   ✅  Succès  : 38
+[2026-05-05T00:38:50.952+0000] {logging_mixin.py:188} INFO -   ❌  Erreurs : 0
+[2026-05-05T00:38:50.954+0000] {logging_mixin.py:188} INFO -   😱  Fear & Greed : 50/100 — Neutral
+[2026-05-05T00:38:50.996+0000] {logging_mixin.py:188} INFO - 
+  💾 CSV    : data/collecte_20260505_003850.csv
+[2026-05-05T00:38:50.998+0000] {logging_mixin.py:188} INFO -   💾 JSON   : data/collecte_20260505_003850.json
+[2026-05-05T00:38:51.000+0000] {logging_mixin.py:188} INFO -   💾 Latest : data/collecte_latest.csv
+[2026-05-05T00:38:51.002+0000] {logging_mixin.py:188} INFO - 
+──────────────────────────────────────────────────────────
+[2026-05-05T00:38:51.004+0000] {logging_mixin.py:188} INFO -   Aperçu :
+[2026-05-05T00:38:51.020+0000] {logging_mixin.py:188} INFO -   ticker           nom         prix  variation_pct categorie        source
+    AAPL                 276.830000        -1.1700    action yahoo_finance
+    MSFT                 413.620000         0.0900    action yahoo_finance
+    NVDA                 198.480000         0.1800    action yahoo_finance
+   GOOGL                 383.250000        -0.5400    action yahoo_finance
+    AMZN                 272.050000         1.7000    action yahoo_finance
+    TSLA                 392.510000         0.3200    action yahoo_finance
+    META                 610.410000         0.2600    action yahoo_finance
+   ^GSPC                7200.750000        -0.4100    indice yahoo_finance
+    ^DJI               48941.898400        -1.1300    indice yahoo_finance
+   ^IXIC               25067.800800        -0.1900    indice yahoo_finance
+   ^FCHI                7976.120000        -1.6800    indice yahoo_finance
+  ^GDAXI               23991.270000        -1.2400    indice yahoo_finance
+   ^FTSE               10363.900400        -0.1400    indice yahoo_finance
+  TTE.PA                  78.650000        -0.9300 action_fr yahoo_finance
+   BN.PA                  65.200000        -2.0100 action_fr yahoo_finance
+  AIR.PA                 176.180000         0.5100 action_fr yahoo_finance
+  SAN.PA                  77.810000        -2.6500 action_fr yahoo_finance
+   OR.PA                 359.700000        -1.5700 action_fr yahoo_finance
+ BTC-USD       Bitcoin 80032.000000         2.1631    crypto     coingecko
+ ETH-USD      Ethereum  2353.450000         1.8480    crypto     coingecko
+ XRP-USD           XRP     1.390000         0.7245    crypto     coingecko
+ BNB-USD           BNB   624.340000         1.3482    crypto     coingecko
+ SOL-USD        Solana    84.160000         0.9343    crypto     coingecko
+DOGE-USD      Dogecoin     0.110434         2.2129    crypto     coingecko
+ ADA-USD       Cardano     0.250078         0.8068    crypto     coingecko
+ DOT-USD      Polkadot     1.230000         2.0488    crypto     coingecko
+ BTC-USD               80057.070000         2.1830    crypto       binance
+ ETH-USD                2354.280000         1.8820    crypto       binance
+ BNB-USD                 624.610000         1.3760    crypto       binance
+ ADA-USD                   0.250200         0.8460    crypto       binance
+ XRP-USD                   1.394300         0.7590    crypto       binance
+DOGE-USD                   0.110500         2.3240    crypto       binance
+ SOL-USD                  84.240000         0.9950    crypto       binance
+ DOT-USD                   1.229000         2.0760    crypto       binance
+  1rPTTE TOTALENERGIES    78.650000        -0.8100 action_fr    boursorama
+   1rPBN        DANONE    65.200000        -2.3100 action_fr    boursorama
+  1rPAIR        AIRBUS   176.180000         0.7400 action_fr    boursorama
+  1rPSAN        SANOFI    77.810000        -2.5200 action_fr    boursorama
+[2026-05-05T00:38:51.141+0000] {batch_ingestion.py:92} ERROR - Echec du batch : [Errno 1] Operation not permitted
+Traceback (most recent call last):
+  File "/opt/airflow/project/ingestion/batch_ingestion.py", line 85, in batch_job
+    reorganiser_fichiers()
+  File "/opt/airflow/project/ingestion/batch_ingestion.py", line 66, in reorganiser_fichiers
+    shutil.copy2(chemin, os.path.join(LOGS_DIR, fichier))
+  File "/usr/local/lib/python3.12/shutil.py", line 476, in copy2
+    copystat(src, dst, follow_symlinks=follow_symlinks)
+  File "/usr/local/lib/python3.12/shutil.py", line 384, in copystat
+    lookup("utime")(dst, ns=(st.st_atime_ns, st.st_mtime_ns),
+PermissionError: [Errno 1] Operation not permitted
+[2026-05-05T00:38:51.168+0000] {logging_mixin.py:188} INFO - Batch ingestion terminé
+[2026-05-05T00:38:51.170+0000] {python.py:237} INFO - Done. Returned value was: None
+[2026-05-05T00:38:51.173+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-05T00:38:51.235+0000] {taskinstance.py:1205} INFO - Marking task as SUCCESS. dag_id=finance_pipeline, task_id=batch_ingestion, execution_date=20260505T003713, start_date=20260505T003803, end_date=20260505T003851
+[2026-05-05T00:38:51.343+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-05-05T00:38:51.432+0000] {taskinstance.py:3482} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-05-05T00:38:51.444+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

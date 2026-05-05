@@ -39,8 +39,8 @@ services:
     image: minio/minio:latest
     container_name: minio-finance
     ports:
-      - "9000:9000"    # API S3
-      - "9001:9001"    # Console web
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
@@ -48,5 +48,41 @@ services:
     volumes:
       - minio_data:/data
 
+  postgres-airflow:
+    image: postgres:15
+    container_name: postgres-airflow
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_airflow_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+
+  airflow-finance:
+    image: apache/airflow:2.9.0
+    container_name: airflow-finance
+    depends_on:
+      postgres-airflow:
+        condition: service_healthy
+    ports:
+      - "8082:8080"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-airflow/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: finance_secret_key_2026
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs_airflow:/opt/airflow/logs
+      - .:/opt/airflow/project
+    command: >
+      bash -c "pip install pandas duckdb boto3 apscheduler yfinance requests websocket-client kafka-python && airflow db migrate && airflow users create --username admin --password admin --firstname Admin --lastname Finance --role Admin --email admin@finance.com && airflow webserver & airflow scheduler"
+
 volumes:
   minio_data:
+  postgres_airflow_data:

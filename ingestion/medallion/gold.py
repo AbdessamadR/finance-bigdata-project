@@ -1,15 +1,21 @@
 """
 gold.py
 ─────────────────
-Couche Gold : agrège les données Silver en KPIs
-prêts pour dashboards et analyses.
-Lit depuis data/silver/silver_latest.csv
-Sauvegarde dans data/gold/
+Couche Gold : agrège les données Silver en KPIs.
+Technologies : DuckDB / SQL principalement + Python pour sauvegarde.
+KPIs produits :
+  1. Snapshot global du marché
+  2. Top 5 hausses / baisses
+  3. Résumé par catégorie
+  4. Résumé par devise
+  5. Alertes prix (variation > seuil)
+  6. Top cryptos par capitalisation
 """
 
 import os
 import logging
 import pandas as pd
+import duckdb
 from datetime import datetime
 
 # ── Chemins ───────────────────────────────────────────────
@@ -36,184 +42,210 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# ── Charger Silver ────────────────────────────────────────
-def charger_silver() -> pd.DataFrame:
+# ── Charger Silver dans DuckDB ────────────────────────────
+def charger_silver_duckdb() -> duckdb.DuckDBPyConnection:
     chemin = os.path.join(SILVER_DIR, "silver_latest.csv")
     if not os.path.exists(chemin):
         logger.error("silver_latest.csv introuvable — lance silver.py d'abord")
-        return pd.DataFrame()
-    df = pd.read_csv(chemin, encoding="utf-8-sig")
-    for col in ["prix", "variation_pct", "volume", "capitalisation",
-                "prix_haut", "prix_bas", "prix_ouv"]:
-        if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-    logger.info(f"Silver chargé : {len(df)} lignes")
-    return df
+        return None
 
-
-# ── KPI 1 : Snapshot global du marché ────────────────────
-def snapshot_marche(df: pd.DataFrame) -> pd.DataFrame:
-    df_ok = df[df["variation_pct"].notna()]
-    nb_hausse = len(df_ok[df_ok["variation_pct"] > 0])
-    nb_baisse = len(df_ok[df_ok["variation_pct"] < 0])
-    nb_neutre = len(df_ok[df_ok["variation_pct"] == 0])
-
-    meilleur = df_ok.loc[df_ok["variation_pct"].idxmax()]
-    pire     = df_ok.loc[df_ok["variation_pct"].idxmin()]
-
-    result = pd.DataFrame([{
-        "date_snapshot":      datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
-        "total_actifs":       len(df),
-        "actifs_en_hausse":   nb_hausse,
-        "actifs_en_baisse":   nb_baisse,
-        "actifs_neutres":     nb_neutre,
-        "pct_marche_hausse":  round(nb_hausse / len(df_ok) * 100, 1),
-        "variation_moyenne":  round(df_ok["variation_pct"].mean(), 4),
-        "variation_mediane":  round(df_ok["variation_pct"].median(), 4),
-        "meilleur_ticker":    meilleur["ticker"],
-        "meilleur_variation": round(meilleur["variation_pct"], 2),
-        "pire_ticker":        pire["ticker"],
-        "pire_variation":     round(pire["variation_pct"], 2),
-    }])
-    logger.info("Snapshot marché calculé")
-    return result
-
-
-# ── KPI 2 : Top hausses et baisses ───────────────────────
-def top_mouvements(df: pd.DataFrame, n: int = 5) -> pd.DataFrame:
-    df_ok = df[df["variation_pct"].notna()].copy()
-
-    top_hausses = (
-        df_ok.nlargest(n, "variation_pct")
-        [["ticker", "nom", "prix", "variation_pct", "devise", "categorie", "source"]]
-        .assign(type_mouvement="hausse")
-    )
-    top_baisses = (
-        df_ok.nsmallest(n, "variation_pct")
-        [["ticker", "nom", "prix", "variation_pct", "devise", "categorie", "source"]]
-        .assign(type_mouvement="baisse")
-    )
-    result = pd.concat([top_hausses, top_baisses], ignore_index=True)
-    logger.info(f"Top {n} mouvements calculés")
-    return result
-
-
-# ── KPI 3 : Résumé par catégorie ─────────────────────────
-def resume_par_categorie(df: pd.DataFrame) -> pd.DataFrame:
-    if "categorie" not in df.columns:
-        return pd.DataFrame()
-
-    result = (
-        df.groupby("categorie")
-        .agg(
-            nb_actifs         =("ticker",        "count"),
-            prix_moyen        =("prix",          "mean"),
-            variation_moyenne =("variation_pct", "mean"),
-            variation_max     =("variation_pct", "max"),
-            variation_min     =("variation_pct", "min"),
-            nb_en_hausse      =("variation_pct", lambda x: (x > 0).sum()),
-            nb_en_baisse      =("variation_pct", lambda x: (x < 0).sum()),
-            volume_total      =("volume",        "sum"),
-            capitalisation_totale=("capitalisation", "sum"),
+    chemin_sql = chemin.replace("\\", "/")
+    con = duckdb.connect()
+    con.execute(f"""
+        CREATE OR REPLACE TABLE silver AS
+        SELECT * FROM read_csv_auto('{chemin_sql}',
+            header      = True,
+            null_padding = True
         )
-        .round(4)
-        .reset_index()
-    )
-    logger.info(f"Résumé par catégorie : {len(result)} catégories")
-    return result
+    """)
+    nb = con.execute("SELECT COUNT(*) FROM silver").fetchone()[0]
+    logger.info(f"Silver chargé dans DuckDB : {nb} lignes")
+    return con
 
 
-# ── KPI 4 : Résumé par devise ─────────────────────────────
-def resume_par_devise(df: pd.DataFrame) -> pd.DataFrame:
-    if "devise" not in df.columns:
-        return pd.DataFrame()
-
-    result = (
-        df.groupby("devise")
-        .agg(
-            nb_actifs         =("ticker",        "count"),
-            variation_moyenne =("variation_pct", "mean"),
-            nb_en_hausse      =("variation_pct", lambda x: (x > 0).sum()),
-            nb_en_baisse      =("variation_pct", lambda x: (x < 0).sum()),
-        )
-        .round(4)
-        .reset_index()
-    )
-    logger.info(f"Résumé par devise : {len(result)} devises")
-    return result
-
-
-# ── KPI 5 : Alertes prix ──────────────────────────────────
-def alertes_prix(df: pd.DataFrame, seuil: float = 2.0) -> pd.DataFrame:
-    alertes = df[df["variation_pct"].abs() >= seuil].copy()
-    if alertes.empty:
-        logger.info(f"Aucune alerte (seuil {seuil}%)")
-        return alertes
-
-    alertes["niveau_alerte"] = alertes["variation_pct"].apply(
-        lambda v: "forte hausse" if v >= seuil else "forte baisse"
-    )
-    alertes = (
-        alertes[["ticker", "nom", "prix", "variation_pct",
-                 "niveau_alerte", "categorie", "source", "devise"]]
-        .sort_values("variation_pct", ascending=False)
-        .reset_index(drop=True)
-    )
-    logger.info(f"Alertes prix (seuil {seuil}%) : {len(alertes)} actifs")
-    return alertes
-
-
-# ── KPI 6 : Top cryptos par capitalisation ───────────────
-def top_cryptos_capitalisation(df: pd.DataFrame, n: int = 5) -> pd.DataFrame:
-    cryptos = df[
-        (df["categorie"] == "crypto") &
-        df["capitalisation"].notna()
-    ].copy()
-
-    if cryptos.empty:
-        return pd.DataFrame()
-
-    result = (
-        cryptos.nlargest(n, "capitalisation")
-        [["ticker", "nom", "prix", "capitalisation", "variation_pct", "volume"]]
-        .reset_index(drop=True)
-    )
-    logger.info(f"Top {n} cryptos par capitalisation calculés")
-    return result
-
-
-# ── Sauvegarder un DataFrame Gold ────────────────────────
+# ── Sauvegarder un résultat Gold ──────────────────────────
 def sauvegarder_gold(df: pd.DataFrame, nom: str):
-    if df.empty:
+    if df is None or df.empty:
         logger.warning(f"Données vides — {nom} non sauvegardé")
         return
     horodatage = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-    chemin     = os.path.join(GOLD_DIR, f"{nom}_{horodatage}.csv")
-    latest     = os.path.join(GOLD_DIR, f"{nom}_latest.csv")
-    df.to_csv(chemin, index=False, encoding="utf-8-sig")
-    df.to_csv(latest, index=False, encoding="utf-8-sig")
-    logger.info(f"Gold sauvegardé : {nom}_latest.csv")
+    df.to_csv(
+        os.path.join(GOLD_DIR, f"{nom}_{horodatage}.csv"),
+        index=False, encoding="utf-8-sig"
+    )
+    df.to_csv(
+        os.path.join(GOLD_DIR, f"{nom}_latest.csv"),
+        index=False, encoding="utf-8-sig"
+    )
+    logger.info(f"Gold sauvegardé : {nom}_latest.csv ({len(df)} lignes)")
 
 
-# ── Pipeline Gold complet ─────────────────────────────────
+# ════════════════════════════════════════════════════════════
+#  KPIs — calculés en SQL DuckDB
+# ════════════════════════════════════════════════════════════
+
+def kpi_snapshot_marche(con) -> pd.DataFrame:
+    df = con.execute("""
+        SELECT
+            STRFTIME(NOW(), '%Y-%m-%d %H:%M:%S')   AS date_snapshot,
+            COUNT(*)                                 AS total_actifs,
+            SUM(CASE WHEN variation_pct > 0
+                THEN 1 ELSE 0 END)                  AS actifs_en_hausse,
+            SUM(CASE WHEN variation_pct < 0
+                THEN 1 ELSE 0 END)                  AS actifs_en_baisse,
+            SUM(CASE WHEN variation_pct = 0
+                THEN 1 ELSE 0 END)                  AS actifs_neutres,
+            ROUND(
+                100.0 * SUM(CASE WHEN variation_pct > 0
+                THEN 1 ELSE 0 END) / COUNT(*), 1
+            )                                        AS pct_marche_hausse,
+            ROUND(AVG(variation_pct),    4)          AS variation_moyenne,
+            ROUND(MEDIAN(variation_pct), 4)          AS variation_mediane,
+            ROUND(MAX(variation_pct),    2)          AS meilleure_variation,
+            ROUND(MIN(variation_pct),    2)          AS pire_variation
+        FROM silver
+        WHERE variation_pct IS NOT NULL
+    """).df()
+    logger.info("SQL ✓ KPI 1 : Snapshot marché")
+    return df
+
+
+def kpi_top_mouvements(con, n: int = 5) -> pd.DataFrame:
+    df = con.execute(f"""
+        SELECT ticker, nom, prix, variation_pct,
+               devise, categorie, source,
+               'hausse' AS type_mouvement
+        FROM (
+            SELECT * FROM silver
+            WHERE variation_pct IS NOT NULL
+            ORDER BY variation_pct DESC
+            LIMIT {n}
+        ) top_h
+
+        UNION ALL
+
+        SELECT ticker, nom, prix, variation_pct,
+               devise, categorie, source,
+               'baisse' AS type_mouvement
+        FROM (
+            SELECT * FROM silver
+            WHERE variation_pct IS NOT NULL
+            ORDER BY variation_pct ASC
+            LIMIT {n}
+        ) top_b
+
+        ORDER BY variation_pct DESC
+    """).df()
+    logger.info(f"SQL ✓ KPI 2 : Top {n} mouvements")
+    return df
+
+
+def kpi_resume_categorie(con) -> pd.DataFrame:
+    df = con.execute("""
+        SELECT
+            categorie,
+            COUNT(*)                                        AS nb_actifs,
+            ROUND(AVG(prix),           4)                   AS prix_moyen,
+            ROUND(AVG(variation_pct),  4)                   AS variation_moyenne,
+            ROUND(MAX(variation_pct),  4)                   AS variation_max,
+            ROUND(MIN(variation_pct),  4)                   AS variation_min,
+            SUM(CASE WHEN variation_pct > 0
+                THEN 1 ELSE 0 END)                          AS nb_en_hausse,
+            SUM(CASE WHEN variation_pct < 0
+                THEN 1 ELSE 0 END)                          AS nb_en_baisse,
+            ROUND(SUM(volume),         2)                   AS volume_total,
+            ROUND(SUM(capitalisation), 2)                   AS capitalisation_totale
+        FROM silver
+        GROUP BY categorie
+        ORDER BY nb_actifs DESC
+    """).df()
+    logger.info("SQL ✓ KPI 3 : Résumé par catégorie")
+    return df
+
+
+def kpi_resume_devise(con) -> pd.DataFrame:
+    df = con.execute("""
+        SELECT
+            devise,
+            COUNT(*)                                        AS nb_actifs,
+            ROUND(AVG(variation_pct), 4)                    AS variation_moyenne,
+            SUM(CASE WHEN variation_pct > 0
+                THEN 1 ELSE 0 END)                          AS nb_en_hausse,
+            SUM(CASE WHEN variation_pct < 0
+                THEN 1 ELSE 0 END)                          AS nb_en_baisse
+        FROM silver
+        GROUP BY devise
+        ORDER BY nb_actifs DESC
+    """).df()
+    logger.info("SQL ✓ KPI 4 : Résumé par devise")
+    return df
+
+
+def kpi_alertes_prix(con, seuil: float = 2.0) -> pd.DataFrame:
+    df = con.execute(f"""
+        SELECT
+            ticker,
+            nom,
+            ROUND(prix,          4) AS prix,
+            ROUND(variation_pct, 4) AS variation_pct,
+            CASE
+                WHEN variation_pct >=  {seuil} THEN 'forte hausse'
+                WHEN variation_pct <= -{seuil} THEN 'forte baisse'
+            END                     AS niveau_alerte,
+            categorie,
+            source,
+            devise
+        FROM silver
+        WHERE ABS(variation_pct) >= {seuil}
+        ORDER BY variation_pct DESC
+    """).df()
+    logger.info(f"SQL ✓ KPI 5 : Alertes prix seuil={seuil}% → {len(df)} actifs")
+    return df
+
+
+def kpi_top_cryptos_capitalisation(con, n: int = 5) -> pd.DataFrame:
+    df = con.execute(f"""
+        SELECT
+            ticker,
+            nom,
+            ROUND(prix,           4) AS prix,
+            ROUND(capitalisation, 2) AS capitalisation,
+            ROUND(variation_pct,  4) AS variation_pct,
+            ROUND(volume,         2) AS volume
+        FROM silver
+        WHERE categorie     = 'crypto'
+          AND capitalisation IS NOT NULL
+        ORDER BY capitalisation DESC
+        LIMIT {n}
+    """).df()
+    logger.info(f"SQL ✓ KPI 6 : Top {n} cryptos par capitalisation")
+    return df
+
+
+# ════════════════════════════════════════════════════════════
+#  PIPELINE GOLD COMPLET
+# ════════════════════════════════════════════════════════════
+
 def transformer_gold():
     logger.info("=" * 50)
-    logger.info("Démarrage pipeline Gold")
+    logger.info("Démarrage pipeline Gold (DuckDB/SQL)")
     logger.info("=" * 50)
 
-    df = charger_silver()
-    if df.empty:
+    con = charger_silver_duckdb()
+    if con is None:
         return
 
-    # Calcul des KPIs
-    df_snapshot   = snapshot_marche(df)
-    df_top        = top_mouvements(df, n=5)
-    df_categorie  = resume_par_categorie(df)
-    df_devise     = resume_par_devise(df)
-    df_alertes    = alertes_prix(df, seuil=2.0)
-    df_cryptos    = top_cryptos_capitalisation(df, n=5)
+    # ── Calcul des KPIs en SQL ────────────────────────────
+    df_snapshot  = kpi_snapshot_marche(con)
+    df_top       = kpi_top_mouvements(con, n=5)
+    df_categorie = kpi_resume_categorie(con)
+    df_devise    = kpi_resume_devise(con)
+    df_alertes   = kpi_alertes_prix(con, seuil=2.0)
+    df_cryptos   = kpi_top_cryptos_capitalisation(con, n=5)
 
-    # Sauvegarde
+    con.close()
+
+    # ── Sauvegarde CSV ────────────────────────────────────
     sauvegarder_gold(df_snapshot,  "snapshot_marche")
     sauvegarder_gold(df_top,       "top_mouvements")
     sauvegarder_gold(df_categorie, "resume_categorie")
@@ -222,38 +254,28 @@ def transformer_gold():
     sauvegarder_gold(df_cryptos,   "top_cryptos_cap")
 
     # ── Affichage terminal ────────────────────────────────
-    print("\n" + "=" * 58)
-    print("  SNAPSHOT MARCHÉ")
-    print("=" * 58)
+    sep = "=" * 58
+
+    print(f"\n{sep}\n  SNAPSHOT MARCHÉ\n{sep}")
     print(df_snapshot.to_string(index=False))
 
-    print("\n" + "=" * 58)
-    print("  TOP 5 HAUSSES / BAISSES")
-    print("=" * 58)
+    print(f"\n{sep}\n  TOP 5 HAUSSES / BAISSES\n{sep}")
     cols = ["ticker", "prix", "variation_pct", "type_mouvement", "categorie"]
     print(df_top[[c for c in cols if c in df_top.columns]].to_string(index=False))
 
-    print("\n" + "=" * 58)
-    print("  RÉSUMÉ PAR CATÉGORIE")
-    print("=" * 58)
+    print(f"\n{sep}\n  RÉSUMÉ PAR CATÉGORIE\n{sep}")
     print(df_categorie.to_string(index=False))
 
-    print("\n" + "=" * 58)
-    print("  RÉSUMÉ PAR DEVISE")
-    print("=" * 58)
+    print(f"\n{sep}\n  RÉSUMÉ PAR DEVISE\n{sep}")
     print(df_devise.to_string(index=False))
 
     if not df_alertes.empty:
-        print("\n" + "=" * 58)
-        print("  ALERTES PRIX (variation > 2%)")
-        print("=" * 58)
+        print(f"\n{sep}\n  ALERTES PRIX (variation ≥ 2%)\n{sep}")
         cols_a = ["ticker", "prix", "variation_pct", "niveau_alerte", "categorie"]
         print(df_alertes[[c for c in cols_a if c in df_alertes.columns]].to_string(index=False))
 
     if not df_cryptos.empty:
-        print("\n" + "=" * 58)
-        print("  TOP 5 CRYPTOS PAR CAPITALISATION")
-        print("=" * 58)
+        print(f"\n{sep}\n  TOP 5 CRYPTOS PAR CAPITALISATION\n{sep}")
         print(df_cryptos.to_string(index=False))
 
     logger.info("Pipeline Gold terminé")
